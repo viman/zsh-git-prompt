@@ -65,13 +65,18 @@ git_super_status() {
 	precmd_update_git_vars
     if [ -n "$__CURRENT_GIT_STATUS" ]; then
 	  STATUS="$ZSH_THEME_GIT_PROMPT_PREFIX$ZSH_THEME_GIT_PROMPT_BRANCH$GIT_BRANCH%{${reset_color}%}"
+	  if [ "$GIT_BEHIND" -ne "0" ] || [ "$GIT_AHEAD" -ne "0" ] || [ "$GIT_STAGED" -ne "0" ] || [ "$GIT_CONFLICTS" -ne "0" ] || [ "$GIT_CHANGED" -ne "0" ] || [ "$GIT_UNTRACKED" -ne "0" ]; then
+		  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_STATUSES_PREFIX%{${reset_color}%}"
+	  fi;
 	  if [ "$GIT_BEHIND" -ne "0" ]; then
 		  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_BEHIND$GIT_BEHIND%{${reset_color}%}"
 	  fi
 	  if [ "$GIT_AHEAD" -ne "0" ]; then
 		  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_AHEAD$GIT_AHEAD%{${reset_color}%}"
 	  fi
-	  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_SEPARATOR"
+	  if ([ "$GIT_BEHIND" -ne "0" ] || [ "$GIT_AHEAD" -ne "0" ]) && ([ "$GIT_STAGED" -ne "0" ] || [ "$GIT_CONFLICTS" -ne "0" ] || [ "$GIT_CHANGED" -ne "0" ] || [ "$GIT_UNTRACKED" -ne "0" ]); then
+		  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_SEPARATOR"
+	  fi;
 	  if [ "$GIT_STAGED" -ne "0" ]; then
 		  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_STAGED$GIT_STAGED%{${reset_color}%}"
 	  fi
@@ -87,6 +92,9 @@ git_super_status() {
 	  if [ "$GIT_CHANGED" -eq "0" ] && [ "$GIT_CONFLICTS" -eq "0" ] && [ "$GIT_STAGED" -eq "0" ] && [ "$GIT_UNTRACKED" -eq "0" ]; then
 		  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_CLEAN"
 	  fi
+	  if [ "$GIT_BEHIND" -ne "0" ] || [ "$GIT_AHEAD" -ne "0" ] || [ "$GIT_STAGED" -ne "0" ] || [ "$GIT_CONFLICTS" -ne "0" ] || [ "$GIT_CHANGED" -ne "0" ] || [ "$GIT_UNTRACKED" -ne "0" ]; then
+	  	  STATUS="$STATUS$ZSH_THEME_GIT_PROMPT_STATUSES_SUFFIX%{${reset_color}%}"
+	  fi;
 	  STATUS="$STATUS%{${reset_color}%}$ZSH_THEME_GIT_PROMPT_SUFFIX"
 	  echo "$STATUS"
 	fi
@@ -96,6 +104,8 @@ git_super_status() {
 ZSH_THEME_GIT_PROMPT_PREFIX="("
 ZSH_THEME_GIT_PROMPT_SUFFIX=")"
 ZSH_THEME_GIT_PROMPT_SEPARATOR="|"
+ZSH_THEME_GIT_PROMPT_STATUSES_PREFIX=""
+ZSH_THEME_GIT_PROMPT_STATUSES_SUFFIX=""
 ZSH_THEME_GIT_PROMPT_BRANCH="%{$fg_bold[magenta]%}"
 ZSH_THEME_GIT_PROMPT_STAGED="%{$fg[red]%}%{●%G%}"
 ZSH_THEME_GIT_PROMPT_CONFLICTS="%{$fg[red]%}%{✖%G%}"
